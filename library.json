@@ -1,0 +1,32 @@
+{
+    "name": "GuruxDLMS",
+    "description": "GuruxDLMS ANSI C Library",
+    "keywords": "dlms,gurux,ansi-c",
+    "authors": {
+        "name": "Gurux",
+        "maintainer": true
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/shammysha/GuruxDLMS.c"
+    },
+    "version": "1.1.0",
+    "license": "GPL-3.0",
+    "frameworks": "*",
+    "platforms": "*",
+    "export": {
+        "include": [
+            "development/src/*.c",
+            "development/include/*.h"
+        ]
+    },
+    "build": {
+        "srcFilter": [
+            "+<development/src/*.c>",
+            "+<development/include/*.h>"
+        ],
+        "flags": [
+            "-Idevelopment/include"
+        ]
+    }
+}

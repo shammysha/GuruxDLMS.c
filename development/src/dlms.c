@@ -5341,8 +5341,15 @@ int dlms_getPdu(
             // Client handles this.
             break;
         default:
+#ifdef DLMS_CUSTOM_PDU
+            return svr_isCustomCommand(
+                settings,
+                cmd,
+                data);
+#else
             // Invalid command.
             return DLMS_ERROR_CODE_INVALID_COMMAND;
+#endif //DLMS_CUSTOM_PDU
         }
     }
     else if ((data->moreData & DLMS_DATA_REQUEST_TYPES_FRAME) == 0)

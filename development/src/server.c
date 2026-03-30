@@ -3618,6 +3618,38 @@ int svr_handleCommand(
         frame = getNextSend(&settings->base, 0);
         break;
     default:
+#ifdef DLMS_CUSTOM_PDU
+        if ((ret = svr_handleCustomPDU(
+            &settings->base,
+            cmd,
+            data)) != 0)
+        {
+            //Invalid command.
+#ifdef DLMS_DEBUG
+            svr_notifyTrace(GET_STR_FROM_EEPROM("Unknown command. "), cmd);
+#endif //DLMS_DEBUG
+            ret = DLMS_ERROR_CODE_INVALID_COMMAND;
+        }
+        if (ret == DLMS_ERROR_CODE_INVALID_COMMAND)
+        {
+            bb_clear(data);
+            if (settings->base.useLogicalNameReferencing)
+            {
+                ret = svr_generateExceptionResponse(&settings->base,
+                    DLMS_EXCEPTION_STATE_ERROR_SERVICE_NOT_ALLOWED,
+                    DLMS_ERROR_CODE_INVALID_COMMAND,
+                    data);
+            }
+            else
+            {
+                ret = svr_generateConfirmedServiceError(
+                    settings,
+                    DLMS_CONFIRMED_SERVICE_ERROR_INITIATE_ERROR,
+                    DLMS_SERVICE_ERROR_SERVICE, DLMS_SERVICE_UNSUPPORTED,
+                    data);
+            }
+        }
+#else
         //Invalid command.
 #ifdef DLMS_DEBUG
         svr_notifyTrace(GET_STR_FROM_EEPROM("Unknown command. "), cmd);
@@ -3642,6 +3674,7 @@ int svr_handleCommand(
                 DLMS_SERVICE_ERROR_SERVICE, DLMS_SERVICE_UNSUPPORTED,
                 data);
         }
+#endif //DLMS_CUSTOM_PDU
     }
     if (ret == DLMS_ERROR_CODE_INVOCATION_COUNTER_TOO_SMALL ||
         ret == DLMS_ERROR_CODE_INVALID_DECIPHERING_ERROR ||

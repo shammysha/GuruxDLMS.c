@@ -231,6 +231,10 @@ extern "C" {
     // Used when the client sends data larger than the allowed PDU size.
     // The meter is capable of writing such data directly to flash memory.
 
+    // #define DLMS_CUSTOM_PDU
+    // Used when the Custom PDUs are used. Some DLMS sub standards need this, 
+    // ex. DLMS-COSEM for Smart Meters in Spain.
+
 #ifdef ARDUINO
 /////////////////////////////////////////////////////////////////////////////
 //If Arduino is used.

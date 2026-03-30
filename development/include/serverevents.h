@@ -295,6 +295,19 @@ extern "C" {
         gxByteBuffer* value);
 #endif //DLMS_WRITE_MULTIPLE_DATABLOCKS
 
+/*Meter is receiving custom PDU as defined e.g. Spain DLMS sub standard.*/
+#ifdef DLMS_CUSTOM_PDU
+    extern int svr_IsCustomCommand(
+        dlmsSettings* settings,
+        unsigned char cmd,
+        gxByteBuffer* data);
+
+    extern int svr_handleCustomPDU(
+        dlmsSettings* settings,
+        unsigned char cmd,
+        gxByteBuffer* data);
+#endif //DLMS_CUSTOM_PDU
+
 #ifdef  __cplusplus
 }
 #endif

@@ -210,7 +210,6 @@ int var_getInt16(dlmsVARIANT* data, short* value)
 
 int var_getInt32(dlmsVARIANT* data, int32_t* value)
 {
-    var_clear(data);
     if (data->vt == DLMS_DATA_TYPE_NONE)
     {
         *value = 0;

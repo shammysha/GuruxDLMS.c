@@ -297,7 +297,7 @@ extern "C" {
 
 /*Meter is receiving custom PDU as defined e.g. Spain DLMS sub standard.*/
 #ifdef DLMS_CUSTOM_PDU
-    extern int svr_IsCustomCommand(
+    extern int svr_isCustomCommand(
         dlmsSettings* settings,
         unsigned char cmd,
         gxByteBuffer* data);

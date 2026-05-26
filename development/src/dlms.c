@@ -5331,7 +5331,7 @@ int dlms_getPdu(
 #endif //!defined(DLMS_IGNORE_GENERAL_CIPHERING) && !defined(DLMS_IGNORE_HIGH_GMAC)
 #endif //DLMS_IGNORE_HIGH_GMAC
         case DLMS_COMMAND_DATA_NOTIFICATION:
-            ret = dlms_handleDataNotification(settings, data);
+            ret = dlms_handleDataNotification(settings, data);            
             // Client handles this.
             break;
         case DLMS_COMMAND_EVENT_NOTIFICATION:
@@ -5345,7 +5345,7 @@ int dlms_getPdu(
             return svr_isCustomCommand(
                 settings,
                 cmd,
-                data);
+                &data->data);
 #else
             // Invalid command.
             return DLMS_ERROR_CODE_INVALID_COMMAND;

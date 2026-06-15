@@ -1526,31 +1526,37 @@ int getCompactArrayItem(
     variantArray* list,
     uint32_t len)
 {
-    int ret;
+    int ret = 0;
     gxDataInfo tmp;
     di_init(&tmp);
     tmp.type = dt;
     uint32_t start = buff->position;
-    dlmsVARIANT* value = gxmalloc(sizeof(dlmsVARIANT));
-    if (value == NULL)
-    {
-        return DLMS_ERROR_CODE_OUTOFMEMORY;
-    }
-    var_init(value);
     if (dt == DLMS_DATA_TYPE_STRING)
     {
         while (buff->position - start < len)
         {
-            var_clear(value);
+            dlmsVARIANT* value = gxmalloc(sizeof(dlmsVARIANT));
+            if (value == NULL)
+            {
+                ret = DLMS_ERROR_CODE_OUTOFMEMORY;
+                break;
+            }
+            var_init(value);
             di_init(&tmp);
             tmp.type = dt;
             if ((ret = getString(buff, &tmp, 0, value)) != 0)
             {
-                return ret;
+                gxfree(value);
+                break;
             }
-            va_push(list, value);
             if (!tmp.complete)
             {
+                gxfree(value);
+                break;
+            }
+            if ((ret = va_push(list, value)) != 0)
+            {
+                gxfree(value);
                 break;
             }
         }
@@ -1559,16 +1565,31 @@ int getCompactArrayItem(
     {
         while (buff->position - start < len)
         {
-            var_clear(value);
+            dlmsVARIANT* value = gxmalloc(sizeof(dlmsVARIANT));
+            if (value == NULL)
+            {
+                ret = DLMS_ERROR_CODE_OUTOFMEMORY;
+                break;
+            }
+            var_init(value);
             di_init(&tmp);
             tmp.type = dt;
             if ((ret = getOctetString(buff, &tmp, 0, value)) != 0)
             {
-                return ret;
+                if ((ret = va_push(list, value)) != 0)
+                {
+                    gxfree(value);
+                    break;
+                }
             }
-            va_push(list, value);
             if (!tmp.complete)
             {
+                gxfree(value);
+                break;
+            }
+            if ((ret = va_push(list, value)) != 0)
+            {
+                gxfree(value);
                 break;
             }
         }
@@ -1577,21 +1598,33 @@ int getCompactArrayItem(
     {
         while (buff->position - start < len)
         {
-            var_clear(value);
+            dlmsVARIANT* value = gxmalloc(sizeof(dlmsVARIANT));
+            if (value == NULL)
+            {
+                ret = DLMS_ERROR_CODE_OUTOFMEMORY;
+                break;
+            }
+            var_init(value);
             di_init(&tmp);
             tmp.type = dt;
             if ((ret = dlms_getData(buff, &tmp, value)) != 0)
             {
-                return ret;
+                gxfree(value);
+                break;
             }
-            va_push(list, value);
             if (!tmp.complete)
             {
+                gxfree(value);
+                break;
+            }
+            if ((ret = va_push(list, value)) != 0)
+            {
+                gxfree(value);
                 break;
             }
         }
     }
-    return 0;
+    return ret;
 }
 
 int getCompactArrayItem2(
@@ -5331,7 +5364,7 @@ int dlms_getPdu(
 #endif //!defined(DLMS_IGNORE_GENERAL_CIPHERING) && !defined(DLMS_IGNORE_HIGH_GMAC)
 #endif //DLMS_IGNORE_HIGH_GMAC
         case DLMS_COMMAND_DATA_NOTIFICATION:
-            ret = dlms_handleDataNotification(settings, data);            
+            ret = dlms_handleDataNotification(settings, data);
             // Client handles this.
             break;
         case DLMS_COMMAND_EVENT_NOTIFICATION:
